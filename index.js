@@ -32,8 +32,6 @@ const path = require("path");
                         const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/').replace(/\(\)/, '');
                         const error = testcase.error ? testcase.error : testcase.failure;
 
-                        console.log(JSON.stringify(testcase));
-
                         annotations.push({
                             path: klass,
                             start_line: 0,
@@ -41,7 +39,7 @@ const path = require("path");
                             annotation_level: 'failure',
                             title: `JUnit Test "${testcase.name}" failed.`,
                             message: `Test ${testcase.name} failed with ${error.type}`,
-                            raw_details: testcase['system-out'] + '\n\n\n' + error['$t'].replace('\t', '    '),
+                            raw_details: testcase['system-out'] + '\n\n\n' + error['$t'],
                           });
                     }
 
