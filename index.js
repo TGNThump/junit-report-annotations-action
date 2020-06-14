@@ -41,43 +41,59 @@ const path = require("path");
                 testFunction = async testcase => {
                     console.log(JSON.stringify(testcase));
 
-                    if(testcase.failure) {
-                        if(annotations.length < numFailures) {
-                            const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
-                            const filePath = `${testSrcPath}${klass}.java`
+                    if (testcase.error || testcase.failure){
+                        const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
+                        const filePath = `${testSrcPath}${klass}.java`
+                        const error = testcase.error ? testcase.error : testcase.failure;
 
-                            const fullPath = path.resolve(filePath)
-                            
-                            
-                            
+                        annotations.push({
+                            path: filePath,
+                            start_line: 0,
+                            end_line: 0,
+                            start_column: 0,
+                            end_column: 0,
+                            annotation_level: 'failure',
+                            message: `Junit test ${testcase.name} failed with ${error.type}:\n ${error.message}`,
+                          });
+                    }
 
-                            
-                            const file = await fs.promises.readFile(filePath, {encoding: 'utf-8'});
-                            //TODO: make this better won't deal with methods with arguments etc
-                            let line = 0;
-                            const lines = file.split('\n')
-                                for(let i = 0; i < lines.length; i++) {
-                                if(lines[i].indexOf(testcase.name) >= 0) {
-                                    line = i;
-                                    break;
-                                }
-                            }
-                            console.info(`::notice file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
-                            console.info(`::debug file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
-
-                            console.info(`::warning file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
-                            annotations.push({
-                                path: filePath,
-                                start_line: line,
-                                end_line: line,
-                                start_column: 0,
-                                end_column: 0,
-                                annotation_level: 'failure',
-                                message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
-                              });
-                        }
-                        //add
-                    }      
+                    // if(testcase.failure) {
+                    //     if(annotations.length < numFailures) {
+                    //         const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
+                    //         const filePath = `${testSrcPath}${klass}.java`
+                    //
+                    //         const fullPath = path.resolve(filePath)
+                    //        
+                    //        
+                    //        
+                    //
+                    //        
+                    //         const file = await fs.promises.readFile(filePath, {encoding: 'utf-8'});
+                    //         //TODO: make this better won't deal with methods with arguments etc
+                    //         let line = 0;
+                    //         const lines = file.split('\n')
+                    //             for(let i = 0; i < lines.length; i++) {
+                    //             if(lines[i].indexOf(testcase.name) >= 0) {
+                    //                 line = i;
+                    //                 break;
+                    //             }
+                    //         }
+                    //         console.info(`::notice file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
+                    //         console.info(`::debug file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
+                    //
+                    //         console.info(`::warning file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
+                    //         annotations.push({
+                    //             path: filePath,
+                    //             start_line: line,
+                    //             end_line: line,
+                    //             start_column: 0,
+                    //             end_column: 0,
+                    //             annotation_level: 'failure',
+                    //             message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+                    //           });
+                    //     }
+                    //     //add
+                    // }
                 }
 
                 if(Array.isArray(testsuite.testcase)) {
