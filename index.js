@@ -143,7 +143,8 @@ const path = require("path");
                 ...github.context.repo,
                 check_run_id,
                 output: {
-                    title: "Junit Results",
+                    title: "Junit Test Results",
+                    summary: "Junit Test Results",
                     annotations: annotationChunk
                 }
             });
