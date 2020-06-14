@@ -38,8 +38,7 @@ const path = require("path");
                             end_line: 0,
                             annotation_level: 'failure',
                             title: `JUnit Test "${testcase.name}" failed.`,
-                            message: error['$t'],
-                            raw_details: testcase['system-out'],
+                            raw_details: testcase['system-out'] + '\n\n\n' + error['$t'],
                           });
                     }
 
