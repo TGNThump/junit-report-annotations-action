@@ -31,8 +31,6 @@ const path = require("path");
             const data = await fs.promises.readFile(file);
             var json = JSON.parse(parser.toJson(data));
 
-            console.log(json);
-
             if(json.testsuite) {
                 const testsuite = json.testsuite;
                 testDuration +=  Number(testsuite.time);
@@ -41,6 +39,8 @@ const path = require("path");
                 numFailed +=  Number(testsuite.failures);
                 numSkipped +=  Number(testsuite.skipped);
                 testFunction = async testcase => {
+                    console.log(JSON.stringify(testcase));
+
                     if(testcase.failure) {
                         if(annotations.length < numFailures) {
                             const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
