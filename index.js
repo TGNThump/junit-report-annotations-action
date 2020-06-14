@@ -39,7 +39,7 @@ const path = require("path");
                             annotation_level: 'failure',
                             title: `JUnit Test "${testcase.name}" failed.`,
                             message: `Test ${testcase.name} failed with ${error.type}`,
-                            raw_details: testcase['system-out'] + '\n\n\n' + error['$t'],
+                            raw_details: testcase['system-out'] ? (testcase['system-out'].replace(/&amp#27;\[[0-9]+m/g, '') + '\n\n\n' + error['$t']) : error['$t'],
                           });
                     }
 
