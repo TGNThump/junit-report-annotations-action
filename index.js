@@ -18,12 +18,6 @@ const path = require("path");
         const testSrcPath = core.getInput('testSrcPath');
         const globber = await glob.create(inputPath, {followSymbolicLinks: false});
 
-        let numTests = 0;
-        let numSkipped = 0;
-        let numFailed = 0;
-        let numErrored = 0;
-        let testDuration = 0;
-
         let annotations = [];
        
 
@@ -33,28 +27,22 @@ const path = require("path");
 
             if(json.testsuite) {
                 const testsuite = json.testsuite;
-                testDuration +=  Number(testsuite.time);
-                numTests +=  Number(testsuite.tests);
-                numErrored +=  Number(testsuite.errors);
-                numFailed +=  Number(testsuite.failures);
-                numSkipped +=  Number(testsuite.skipped);
                 testFunction = async testcase => {
                     console.log(JSON.stringify(testcase));
 
                     if (testcase.error || testcase.failure){
-                        const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
-                        const filePath = `${testSrcPath}${klass}.java`
+                        const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/').replace(/\(\)/, '');
                         const error = testcase.error ? testcase.error : testcase.failure;
 
                         annotations.push({
-                            path: filePath,
+                            path: klass,
                             start_line: 0,
                             end_line: 0,
                             start_column: 0,
                             end_column: 0,
                             annotation_level: 'failure',
-                            title: `${testcase.name} failed.`,
-                            message: `Junit test ${testcase.name} failed with ${error.type}:\n ${error.message}`,
+                            title: `JUnit Test "${testcase.name}" failed.`,
+                            message: error['$t'],
                           });
                     }
 
@@ -123,23 +111,12 @@ const path = require("path");
         }
         const check_run_id = checkRun.id
 
-        const annotation_level = numFailed + numErrored > 0 ?'failure': 'notice';
-        const annotation = {
-            path: 'test',
-            start_line: 0,
-            end_line: 0,
-            start_column: 0,
-            end_column: 0,
-            annotation_level,
-            message: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
-          };
-
         const chunk = (arr, size) =>
             Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
                 arr.slice(i * size, i * size + size)
             );
 
-        for (const annotationChunk of chunk([annotation, ...annotations], 50)) {
+        for (const annotationChunk of chunk(annotations, 50)) {
             const update_req = {
                 ...github.context.repo,
                 check_run_id,
