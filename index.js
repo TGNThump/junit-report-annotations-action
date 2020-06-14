@@ -139,15 +139,16 @@ const path = require("path");
             );
 
         for (const annotationChunk of chunk([annotation, ...annotations], 50)) {
-            await octokit.checks.update({
+            const update_req = {
                 ...github.context.repo,
                 check_run_id,
                 output: {
-                    title: "Junit Test Results",
-                    summary: "Junit Test Results",
+                    title: "Junit Results",
+                    summary: `Num passed etc`,
                     annotations: annotationChunk
                 }
-            });
+            }
+            await octokit.checks.update(update_req);
         }
     } catch (error) {
    		core.setFailed(error.message);
