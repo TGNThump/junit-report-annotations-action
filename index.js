@@ -138,13 +138,13 @@ const path = require("path");
                 arr.slice(i * size, i * size + size)
             );
 
-        for (const chunk of chunk([annotation, ...annotations], 50)) {
+        for (const annotationChunk of chunk([annotation, ...annotations], 50)) {
             await octokit.checks.update({
                 ...github.context.repo,
                 check_run_id,
                 output: {
                     title: "Junit Results",
-                    annotations: chunk
+                    annotations: annotationChunk
                 }
             });
         }
