@@ -132,27 +132,22 @@ const path = require("path");
             annotation_level,
             message: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
           };
-        // const annotation = {
-        //   path: 'test',
-        //   start_line: 1,
-        //   end_line: 1,
-        //   start_column: 2,
-        //   end_column: 2,
-        //   annotation_level,
-        //   message: `[500] failure`,
-        // };
 
+        const chunk = (arr, size) =>
+            Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+                arr.slice(i * size, i * size + size)
+            );
 
-        const update_req = {
-            ...github.context.repo,
-            check_run_id,
-            output: {
-                title: "Junit Results",
-                summary: `Num passed etc`,
-                annotations: [annotation, ...annotations]
-            }
+        for (const chunk of chunk([annotation, ...annotations], 50)) {
+            await octokit.checks.update({
+                ...github.context.repo,
+                check_run_id,
+                output: {
+                    title: "Junit Results",
+                    annotations: chunk
+                }
+            });
         }
-        await octokit.checks.update(update_req);
     } catch (error) {
    		core.setFailed(error.message);
     }
