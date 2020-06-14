@@ -30,6 +30,9 @@ const path = require("path");
         for await (const file of globber.globGenerator()) {
             const data = await fs.promises.readFile(file);
             var json = JSON.parse(parser.toJson(data));
+
+            console.log(json);
+
             if(json.testsuite) {
                 const testsuite = json.testsuite;
                 testDuration +=  Number(testsuite.time);
