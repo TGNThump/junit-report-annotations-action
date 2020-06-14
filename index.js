@@ -28,8 +28,6 @@ const path = require("path");
             if(json.testsuite) {
                 const testsuite = json.testsuite;
                 testFunction = async testcase => {
-                    console.log(JSON.stringify(testcase));
-
                     if (testcase.error || testcase.failure){
                         const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/').replace(/\(\)/, '');
                         const error = testcase.error ? testcase.error : testcase.failure;
@@ -38,11 +36,10 @@ const path = require("path");
                             path: klass,
                             start_line: 0,
                             end_line: 0,
-                            start_column: 0,
-                            end_column: 0,
                             annotation_level: 'failure',
                             title: `JUnit Test "${testcase.name}" failed.`,
                             message: error['$t'],
+                            raw_details: testcase['system-out'],
                           });
                     }
 
