@@ -32,6 +32,8 @@ const path = require("path");
                         const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/').replace(/\(\)/, '');
                         const error = testcase.error ? testcase.error : testcase.failure;
 
+                        console.log(JSON.stringify(testcase));
+
                         annotations.push({
                             path: klass,
                             start_line: 0,
